@@ -257,6 +257,9 @@ fn hodeco_paf_line(
     if let Some(difference_string) = &mut hoco_paf.difference_string {
         let mut total_number_of_mismatches_and_gaps = 0;
 
+        let mut query_hodeco_len = 0;
+        let mut target_hodeco_len = 0;
+
         let mut query_offset = hoco_query_start;
         let mut target_offset = hoco_target_start;
         let mut mismatch_insertion = Vec::new();
@@ -271,6 +274,9 @@ fn hodeco_paf_line(
                     query_offset = query_limit;
                     target_offset = target_limit;
                     *length = hodeco_count;
+
+                    query_hodeco_len += hodeco_count;
+                    target_hodeco_len += hodeco_count;
                 }
                 DifferenceColumn::Deletion {
                     missing_query_characters,
@@ -282,6 +288,8 @@ fn hodeco_paf_line(
                     );
                     target_offset = target_limit;
                     total_number_of_mismatches_and_gaps += missing_query_characters.len();
+
+                    target_hodeco_len += missing_query_characters.len();
                 }
                 DifferenceColumn::Insertion {
                     superfluous_query_characters,
@@ -293,6 +301,8 @@ fn hodeco_paf_line(
                     );
                     query_offset = query_limit;
                     total_number_of_mismatches_and_gaps += superfluous_query_characters.len();
+
+                    query_hodeco_len += superfluous_query_characters.len();
                 }
                 DifferenceColumn::Mismatch { reference, query } => {
                     let query_limit = query_offset + 1;
@@ -303,6 +313,9 @@ fn hodeco_paf_line(
                     target_offset = target_limit;
                     mismatch_insertion.push((index, hodeco_count, *reference, *query));
                     total_number_of_mismatches_and_gaps += hodeco_count;
+
+                    query_hodeco_len += hodeco_count;
+                    target_hodeco_len += hodeco_count;
                 }
             }
         }
@@ -316,6 +329,16 @@ fn hodeco_paf_line(
         }
 
         hoco_paf.total_number_of_mismatches_and_gaps = Some(total_number_of_mismatches_and_gaps);
+        // assert_eq!(query_hodeco_len, hoco_paf.query_sequence_length);
+        // assert_eq!(target_hodeco_len, hoco_paf.target_sequence_length);
+        info!(
+            "query difference length: {}, query expected length: {}",
+            query_hodeco_len, hoco_paf.query_sequence_length
+        );
+        info!(
+            "target difference length: {}, target expected length: {}",
+            target_hodeco_len, hoco_paf.target_sequence_length
+        );
     }
 
     if let Some(approximate_per_base_sequence_divergence) =
