@@ -95,7 +95,7 @@ fn main() {
         })
         .collect();
 
-    info!("Creating channels and threads...");
+    info!("Homopolymer decompressing...");
     crossbeam::scope(|scope| {
         let (input_sender, input_receiver) = channel::bounded(configuration.queue_size);
         scope
@@ -158,6 +158,8 @@ fn main() {
         }
     })
     .unwrap_or_else(|error| panic!("Error: {error:?}"));
+
+    info!("Done");
 }
 
 fn hodeco_paf_line(
