@@ -156,6 +156,8 @@ fn main() {
                 })
                 .unwrap_or_else(|error| panic!("Cannot spawn input thread: {error:?}"));
         }
+
+        info!("Waiting for threads to join...");
     })
     .unwrap_or_else(|error| panic!("Error: {error:?}"));
 
