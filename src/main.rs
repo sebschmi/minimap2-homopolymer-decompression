@@ -208,6 +208,10 @@ fn hodeco_paf_line(
             > 0
     );
 
+    let query_alignment_length = hoco_paf.query_end_coordinate - hoco_paf.query_start_coordinate;
+    let target_alignment_length = hoco_paf.target_end_coordinate_on_original_strand
+        - hoco_paf.target_start_coordinate_on_original_strand;
+
     if let Some(cigar_string) = &mut hoco_paf.cigar_string {
         let mut number_of_matching_bases = 0;
         let mut number_of_bases_and_gaps = 0;
@@ -335,11 +339,11 @@ fn hodeco_paf_line(
         // assert_eq!(target_hodeco_len, hoco_paf.target_sequence_length);
         info!(
             "query difference length: {}, query expected length: {}",
-            query_hodeco_len, hoco_paf.query_sequence_length
+            query_hodeco_len, query_alignment_length
         );
         info!(
             "target difference length: {}, target expected length: {}",
-            target_hodeco_len, hoco_paf.target_sequence_length
+            target_hodeco_len, target_alignment_length,
         );
     }
 
